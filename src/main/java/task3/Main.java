@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 public class Main {
@@ -13,7 +14,7 @@ public class Main {
     private static ValuesArray valuesArray = null;
 
     public static void main(String[] args) {
-        if (args.length == 3) {
+        if (args.length == 2) {
 
             File tests = new File(args[0]);
             File values = new File(args[1]);
@@ -32,9 +33,13 @@ public class Main {
 
             ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
                     .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
             try {
-                mapper.writeValue(new File(args[2]), testsArray);
-            } catch (IOException e) {
+                File jarFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                File parentDir = jarFile.getParentFile();
+                File newFile = new File(parentDir, "report.json");
+                mapper.writeValue(newFile, testsArray);
+            } catch (IOException  | URISyntaxException e) {
                 e.printStackTrace();
             }
         }
